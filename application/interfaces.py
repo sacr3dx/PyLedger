@@ -7,3 +7,7 @@ class GenerateUUID(Protocol):
     @abstractmethod
     def __call__(self) -> UUID:
         ...
+
+class DBSession(Protocol):
+    async def commit(self) -> None:
+        ...
