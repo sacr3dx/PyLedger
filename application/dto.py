@@ -21,7 +21,7 @@ class CategoriesDTO:
     type: str
 
 @dataclass(slots=True)
-class TransactionsDTO:
+class TransactionDTO:
     category_id: UUID
     amount: Decimal
     description: str | None

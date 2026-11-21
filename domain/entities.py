@@ -20,7 +20,7 @@ class CategoriesDM:
     type: str
 
 @dataclass(slots=True)
-class TransactionsDM:
+class TransactionDM:
     id: UUID
     user_id: UUID
     category_id: UUID

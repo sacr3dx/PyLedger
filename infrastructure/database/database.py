@@ -1,5 +1,12 @@
-from backend.config import PostgresConfig
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+
+from config import PostgresConfig
 
 
 def new_session_maker(psql_config: PostgresConfig) -> async_sessionmaker[AsyncSession]:
@@ -18,4 +25,30 @@ def new_session_maker(psql_config: PostgresConfig) -> async_sessionmaker[AsyncSe
                 "command_timeout": 5,
             },
         )
-    return async_sessionmaker(engine, class_=AsyncSession, autoflush=False, expire_on_commit=False)
+
+    session_maker = async_sessionmaker(
+        engine,
+        class_=AsyncSession,
+        autoflush=False,
+        expire_on_commit=False
+    )
+
+    return engine, session_maker
+
+async def check_engine(engine: AsyncEngine) -> None:
+    async with engine.connect() as connection:
+        await connection.execute(text("SELECT 1"))
+        
+    print("Database connection successful")    
+
+async def check_migrations(engine: AsyncEngine) -> None:
+    async with engine.connect() as connection:
+        result = await connection.execute(
+            text("SELECT version_num FROM alembic_version")
+        )
+        current_revision = result.scalar_one_or_none()
+
+    if current_revision is None:
+        raise RuntimeError("Database migrations are not applied")
+
+    print(f"Current migration: {current_revision}")
