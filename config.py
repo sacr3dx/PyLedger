@@ -1,7 +1,9 @@
 from os import environ as env
 
+from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
+load_dotenv()
 
 class PostgresConfig(BaseModel):
     host: str
