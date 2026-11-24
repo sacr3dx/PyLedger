@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Protocol
 from uuid import UUID
 
-from domain.entities import TransactionDM
+from domain.entities import TransactionDM, CategoryDM
 
 
 class GenerateUUID(Protocol):
@@ -10,15 +10,17 @@ class GenerateUUID(Protocol):
     def __call__(self) -> UUID:
         ...
 
-class DBSession(Protocol):
-    async def commit(self) -> None:
-        ...
+class CategoryReader(Protocol):
+    async def read_by_category(
+        self,
+        user_id: UUID,
+        category_id: UUID,
+    ) -> CategoryDM | None: ...
 
 class TransactionCreator(Protocol):
     @abstractmethod
     async def save(
         self,
-        user_id: UUID,
         transaction: TransactionDM
     ) -> TransactionDM: 
         ...

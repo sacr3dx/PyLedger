@@ -13,7 +13,7 @@ class UserDM:
     created_at: datetime
 
 @dataclass(slots=True)
-class CategoriesDM:
+class CategoryDM:
     id: UUID
     user_id: UUID
     name: str

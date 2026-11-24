@@ -8,14 +8,14 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from config import Config
 from infrastructure.database.database import check_engine, check_migrations
 from ioc import AppProvide
-from routers.main_page import root_router
+from controllers.http import transaction_router
 
 config = Config()
 container = make_async_container(AppProvide(), context={Config: config})
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
     try:
         engine = await container.get(AsyncEngine)
 
@@ -27,10 +27,9 @@ async def lifespan(app: FastAPI):
         await container.close()
 
 def get_app() -> FastAPI:
-    app = FastAPI(title="PyLedger", lifespan=lifespan)
-    app.include_router(root_router)
-
-    setup_dishka(container, app)
-    return app
+    _app = FastAPI(title="PyLedger", lifespan=lifespan)
+    _app.include_router(transaction_router)
+    setup_dishka(container, _app)
+    return _app
 
 app = get_app()
